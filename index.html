@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リスキリング助成金シミュレーター</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 26px;
+            color: #1e293b;
+            margin: 0 0 8px 0;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        /* 2枚目の画像に基づく2カラムレイアウト */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 左側：入力エリア */
+        .input-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .control-box label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            outline: none;
+            transition: all 0.2s;
+            background: #fff;
+            color: #1e293b;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #3b82f6;
+        }
+
+        .input-unit {
+            position: absolute;
+            right: 20px;
+            font-size: 16px;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        .auto-calc-badge {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: bold;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .guide-grid strong {
+            display: block;
+            font-size: 16px;
+            color: #1e293b;
+            margin-top: 4px;
+        }
+
+        /* 右側：ダッシュボード結果エリア */
+        .results-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);
+        }
+
+        .result-info .label {
+            font-size: 15px;
+            font-weight: bold;
+            color: #334155;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .result-info .formula {
+            font-size: 12px;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        /* 実質負担額のハイライト（2枚目のオレンジ色を再現） */
+        .card-highlight-orange {
+            background: #ff9e7d;
+            border: none;
+        }
+
+        .card-highlight-orange .label {
+            color: #ffffff;
+        }
+        .card-highlight-orange .formula {
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .card-highlight-orange .result-value {
+            color: #ffffff;
+            font-size: 26px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>リスキリング助成金 計算シミュレーター</h1>
+        <div class="subtitle">※1人につき年3回まで受講可能</div>
+    </header>
+
+    <div class="main-layout">
+        <div class="input-sidebar">
+            <div class="control-box">
+                <label for="workers">研修する総人数</label>
+                <div class="input-wrapper">
+                    <input type="number" id="workers" value="2" min="0" step="any">
+                    <span class="input-unit">名</span>
+                </div>
+                
+                <div class="auto-calc-badge">
+                    <span>自動計算された総回数 (3回受講)</span>
+                    <span id="auto-times-badge" style="font-size: 18px; font-weight: bold;">6 回</span>
+                </div>
+
+                <div class="guide-grid">
+                    <div>1人3回受講時<br><strong><span id="g3">2</span>人</strong></div>
+                    <div>1人2回受講時<br><strong><span id="g2">3</span>人</strong></div>
+                    <div>1人1回受講時<br><strong><span id="g1">6</span>人</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-dashboard">
+            <div class="result-card">
+                <div class="result-info">
+                    <span class="label">研修単価</span>
+                    <span class="formula">1人1回あたるの一律費用</span>
+                </div>
+                <div class="result-value">￥200,000</div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-info">
+                    <span class="label">研修費用</span>
+                    <span class="formula">研修単価 × 総回数</span>
+                </div>
+                <div class="result-value" id="cost">￥0</div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-info">
+                    <span class="label">助成金</span>
+                    <span class="formula">研修費用の75%</span>
+                </div>
+                <div class="result-value" id="subsidy">￥0</div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-info">
+                    <span class="label">社労士手数料</span>
+                    <span class="formula">助成金の10%</span>
+                </div>
+                <div class="result-value" id="sharoushi">￥0</div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-info">
+                    <span class="label">手元の助成金</span>
+                    <span class="formula">助成金 － 社労士手数料</span>
+                </div>
+                <div class="result-value" id="net-subsidy">￥0</div>
+            </div>
+
+            <div class="result-card card-highlight-orange">
+                <div class="result-info">
+                    <span class="label">実質負担</span>
+                    <span class="formula">研修費用 － 手元の助成金</span>
+                </div>
+                <div class="result-value" id="burden">￥0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const unitPrice = 200000;
+        const workersInput = document.getElementById('workers');
+        const workers = parseFloat(workersInput.value) || 0;
+
+        // 1人3回受講時の総回数を自動計算
+        const times = workers * 3;
+
+        // 各受講パターンの目安人数を更新
+        document.getElementById('auto-times-badge').innerText = times.toFixed(1).replace('.0', '') + " 回";
+        document.getElementById('g3').innerText = (times / 3).toFixed(1).replace('.0', '');
+        document.getElementById('g2').innerText = (times / 2).toFixed(1).replace('.0', '');
+        document.getElementById('g1').innerText = (times / 1).toFixed(1).replace('.0', '');
+
+        // 計算ロジック
+        const cost = unitPrice * times;
+        const subsidy = cost * 0.75;
+        const sharoushi = subsidy * 0.10;
+        const netSubsidy = subsidy - sharoushi;
+        const burden = cost - netSubsidy;
+
+        // 各カードに金額を反映
+        document.getElementById('cost').innerText = '￥' + Math.round(cost).toLocaleString();
+        document.getElementById('subsidy').innerText = '￥' + Math.round(subsidy).toLocaleString();
+        document.getElementById('sharoushi').innerText = '￥' + Math.round(sharoushi).toLocaleString();
+        document.getElementById('net-subsidy').innerText = '￥' + Math.round(netSubsidy).toLocaleString();
+        document.getElementById('burden').innerText = '￥' + Math.round(burden).toLocaleString();
+    }
+
+    // リアルタイム連動のイベント設定
+    document.addEventListener('DOMContentLoaded', function() {
+        const workersInput = document.getElementById('workers');
+        if(workersInput) {
+            workersInput.addEventListener('input', calculate);
+        }
+        calculate();
+    });
+</script>
+
+</body>
+</html>
