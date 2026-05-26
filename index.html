@@ -229,7 +229,7 @@
             <div class="input-card">
                 <label>研修する総人数</label>
                 <div class="input-wrapper">
-                    <input type="number" id="num-workers" class="modern-input" value="5" min="0" oninput="syncCalculations()">
+                    <input type="number" id="num-workers" class="modern-input" value="5" min="0" oninput="syncCalculations('workers')">
                     <span class="unit">名</span>
                 </div>
                 
@@ -243,7 +243,7 @@
             <div class="input-card">
                 <label>総回数</label>
                 <div class="input-wrapper">
-                    <input type="number" id="num-times" class="modern-input" value="15" min="0" oninput="syncCalculations()">
+                    <input type="number" id="num-times" class="modern-input" value="15" min="0" oninput="syncCalculations('times')">
                     <span class="unit">回</span>
                 </div>
             </div>
@@ -318,20 +318,30 @@
 </div>
 
 <script>
-    function syncCalculations() {
+    function syncCalculations(triggerSource) {
         const unitPrice = 200000;
         const investment = 1800000;
 
-        // 正しいIDで入力ボックスの値を取得するように修正しました
-        const workers = parseFloat(document.getElementById('num-workers').value) || 0;
-        const times = parseFloat(document.getElementById('num-times').value) || 0;
+        let workers = parseFloat(document.getElementById('num-workers').value) || 0;
+        let times = parseFloat(document.getElementById('num-times').value) || 0;
 
-        // 目安人数の計算
-        document.getElementById('pill-3').innerText = (times / 3).toFixed(1).replace('.0', '') + '名';
-        document.getElementById('pill-2').innerText = (times / 2).toFixed(1).replace('.0', '') + '名';
-        document.getElementById('pill-1').innerText = (times / 1).toFixed(1).replace('.0', '') + '名';
+        // 総人数が変更された場合、総回数を自動連動（総人数 × 3）
+        if (triggerSource === 'workers') {
+            times = workers * 3;
+            document.getElementById('num-times').value = times;
+        } 
+        // 総回数が直接変更された場合、総人数を逆算（総回数 ÷ 3）
+        else if (triggerSource === 'times') {
+            workers = Math.round((times / 3) * 10) / 10;
+            document.getElementById('num-workers').value = workers;
+        }
 
-        // 各種ロジック計算
+        // ご指摘いただいた目安人数の計算ロジックを正確に修正
+        document.getElementById('pill-3').innerText = workers.toFixed(1).replace('.0', '') + '名';
+        document.getElementById('pill-2').innerText = (workers * 1.5).toFixed(1).replace('.0', '') + '名';
+        document.getElementById('pill-1').innerText = (workers * 3).toFixed(1).replace('.0', '') + '名';
+
+        // 各種数値のロジック計算
         const cost = unitPrice * times;
         const subsidy = cost * 0.75;
         const sharoushi = subsidy * 0.10;
@@ -339,7 +349,7 @@
         const burden = cost - netSubsidy;
         const netInvestment = investment - burden;
 
-        // 各項目に最新の計算結果を反映
+        // ダッシュボードへの反映
         document.getElementById('val-cost').innerText = '￥' + cost.toLocaleString();
         document.getElementById('val-subsidy').innerText = '￥' + subsidy.toLocaleString();
         document.getElementById('val-sharoushi').innerText = '￥' + sharoushi.toLocaleString();
@@ -348,8 +358,10 @@
         document.getElementById('val-net-investment').innerText = '￥' + netInvestment.toLocaleString();
     }
 
-    // 最初に画面を開いた時にも自動で一度計算を動かします
-    window.onload = syncCalculations;
+    // 初期起動時の計算
+    window.onload = function() {
+        syncCalculations('workers');
+    };
 </script>
 </body>
 </html>
