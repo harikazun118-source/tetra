@@ -1,39 +1,68 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>リスキリング助成金シミュレーター</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f7fa;
-            margin: 0;
-            padding: 40px 20px;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
+<div class="dashboard-panel">
+    <div class="data-row">
+        <div class="meta-info">
+            <span class="title">研修単価</span>
+            <span class="formula">1人1回あたりの<br>一律費用</span>
+        </div>
+        <div class="stat-value">￥200,000</div>
+    </div>
 
-        .app-container {
-            width: 100%;
-            max-width: 1000px;
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            box-sizing: border-box;
-        }
+    <div class="data-row">
+        <div class="meta-info">
+            <span class="title">研修費用</span>
+            <span class="formula">研修単価 ×<br>総回数</span>
+        </div>
+        <div class="stat-value" id="val-cost">￥0</div>
+    </div>
 
-        h1 {
-            text-align: center;
-            font-size: 26px;
-            color: #1e293b;
-            margin: 0 0 8px 0;
-            font-weight: bold;
+    <div class="data-row">
+        <div class="meta-info">
+            <span class="title">助成金</span>
+            <span class="formula">研修費用の<br>75%</span>
+        </div>
+        <div class="stat-value" id="val-subsidy">￥0</div>
+    </div>
+
+    <div class="data-row">
+        <div class="meta-info">
+            <span class="title">社労士手数料</span>
+            <span class="formula">助成金の<br>10%</span>
+        </div>
+        <div class="stat-value" id="val-sharoushi">￥0</div>
+    </div>
+
+    <div class="data-row">
+        <div class="meta-info">
+            <span class="title">手元の助成金</span>
+            <span class="formula">助成金 －<br>社労士手数料</span>
+        </div>
+        <div class="stat-value" id="val-net-subsidy">￥0</div>
+    </div>
+
+    <div class="data-row hero-card-orange">
+        <div class="meta-info">
+            <span class="title">実質負担</span>
+            <span class="formula">研修費用 －<br>手元の助成金</span>
+        </div>
+        <div class="stat-value" id="val-burden">￥0</div>
+    </div>
+
+    <div class="data-row hero-card-green">
+        <div class="meta-info">
+            <span class="title">運用額</span>
+            <span class="formula">固定値</span>
+        </div>
+        <div class="stat-value">￥1,800,000</div>
+    </div>
+
+    <div class="data-row hero-card-orange">
+        <div class="meta-info">
+            <span class="title">プラマイの時の運用額</span>
+            <span class="formula">運用額 －<br>実質負担</span>
+        </div>
+        <div class="stat-value" id="val-net-investment">￥0</div>
+    </div>
+</div>
         }
 
         .subtitle {
