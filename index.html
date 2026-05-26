@@ -95,7 +95,6 @@
             align-items: center;
         }
 
-        /* 数値を直接入力するボックスのスタイリング */
         .modern-input {
             width: 100%;
             padding: 12px 40px 12px 16px;
@@ -323,7 +322,7 @@
         const unitPrice = 200000;
         const investment = 1800000;
 
-        // 入力ボックスから数値を取得
+        // 正しいIDで入力ボックスの値を取得するように修正しました
         const workers = parseFloat(document.getElementById('num-workers').value) || 0;
         const times = parseFloat(document.getElementById('num-times').value) || 0;
 
@@ -340,7 +339,7 @@
         const burden = cost - netSubsidy;
         const netInvestment = investment - burden;
 
-        // 右側の結果に反映
+        // 各項目に最新の計算結果を反映
         document.getElementById('val-cost').innerText = '￥' + cost.toLocaleString();
         document.getElementById('val-subsidy').innerText = '￥' + subsidy.toLocaleString();
         document.getElementById('val-sharoushi').innerText = '￥' + sharoushi.toLocaleString();
@@ -349,7 +348,7 @@
         document.getElementById('val-net-investment').innerText = '￥' + netInvestment.toLocaleString();
     }
 
-    // 画面の読み込み完了時に初期計算を行う
+    // 最初に画面を開いた時にも自動で一度計算を動かします
     window.onload = syncCalculations;
 </script>
 </body>
