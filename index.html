@@ -43,7 +43,6 @@
             margin-bottom: 40px;
         }
 
-        /* 2枚目の画像に基づく2カラムレイアウト */
         .main-layout {
             display: grid;
             grid-template-columns: 1fr 1.3fr;
@@ -57,7 +56,6 @@
             }
         }
 
-        /* 左側：入力エリア */
         .input-sidebar {
             display: flex;
             flex-direction: column;
@@ -142,7 +140,6 @@
             margin-top: 4px;
         }
 
-        /* 右側：ダッシュボード結果エリア */
         .results-dashboard {
             display: flex;
             flex-direction: column;
@@ -180,7 +177,6 @@
             color: #1e293b;
         }
 
-        /* 実質負担額のハイライト（2枚目のオレンジ色を再現） */
         .card-highlight-orange {
             background: #ff9e7d;
             border: none;
@@ -286,23 +282,19 @@
         const workersInput = document.getElementById('workers');
         const workers = parseFloat(workersInput.value) || 0;
 
-        // 1人3回受講時の総回数を自動計算
         const times = workers * 3;
 
-        // 各受講パターンの目安人数を更新
         document.getElementById('auto-times-badge').innerText = times.toFixed(1).replace('.0', '') + " 回";
         document.getElementById('g3').innerText = (times / 3).toFixed(1).replace('.0', '');
         document.getElementById('g2').innerText = (times / 2).toFixed(1).replace('.0', '');
         document.getElementById('g1').innerText = (times / 1).toFixed(1).replace('.0', '');
 
-        // 計算ロジック
         const cost = unitPrice * times;
         const subsidy = cost * 0.75;
         const sharoushi = subsidy * 0.10;
         const netSubsidy = subsidy - sharoushi;
         const burden = cost - netSubsidy;
 
-        // 各カードに金額を反映
         document.getElementById('cost').innerText = '￥' + Math.round(cost).toLocaleString();
         document.getElementById('subsidy').innerText = '￥' + Math.round(subsidy).toLocaleString();
         document.getElementById('sharoushi').innerText = '￥' + Math.round(sharoushi).toLocaleString();
@@ -310,7 +302,6 @@
         document.getElementById('burden').innerText = '￥' + Math.round(burden).toLocaleString();
     }
 
-    // リアルタイム連動のイベント設定
     document.addEventListener('DOMContentLoaded', function() {
         const workersInput = document.getElementById('workers');
         if(workersInput) {
