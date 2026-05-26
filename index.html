@@ -89,51 +89,44 @@
             margin-bottom: 12px;
         }
 
-        .value-display {
+        .input-wrapper {
+            position: relative;
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 10px;
+            align-items: center;
         }
 
-        .num-large {
-            font-size: 28px;
+        /* 数値を直接入力するボックスのスタイリング */
+        .modern-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            font-size: 24px;
             font-weight: 800;
             color: #2563eb;
+            background-color: #ffffff;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .modern-input:focus {
+            border-color: #2563eb;
         }
 
         .unit {
-            font-size: 14px;
+            position: absolute;
+            right: 16px;
+            font-size: 16px;
             color: var(--text-muted);
             font-weight: 600;
-        }
-
-        .modern-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #e2e8f0;
-            outline: none;
-            margin: 10px 0;
-        }
-
-        .modern-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #2563eb;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
         }
 
         .guide-pills {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            margin-top: 12px;
+            margin-top: 16px;
         }
 
         .pill {
@@ -186,7 +179,6 @@
             color: var(--text-dark);
         }
 
-        /* ご指摘箇所のデザイン修正（文字サイズ調整と段落行間の設定） */
         .meta-info .formula {
             font-size: 12px;
             color: #475569;
@@ -237,11 +229,10 @@
         <div class="control-panel">
             <div class="input-card">
                 <label>研修する総人数</label>
-                <div class="value-display">
-                    <span id="txt-workers" class="num-large">5</span>
+                <div class="input-wrapper">
+                    <input type="number" id="num-workers" class="modern-input" value="5" min="0" oninput="syncCalculations()">
                     <span class="unit">名</span>
                 </div>
-                <input type="range" id="sl-workers" class="modern-slider" min="1" max="50" value="5" oninput="syncCalculations()">
                 
                 <div class="guide-pills">
                     <div class="pill">3回受講<br><span id="pill-3">5名</span></div>
@@ -252,11 +243,10 @@
 
             <div class="input-card">
                 <label>総回数</label>
-                <div class="value-display">
-                    <span id="txt-times" class="num-large">15</span>
+                <div class="input-wrapper">
+                    <input type="number" id="num-times" class="modern-input" value="15" min="0" oninput="syncCalculations()">
                     <span class="unit">回</span>
                 </div>
-                <input type="range" id="sl-times" class="modern-slider" min="1" max="100" value="15" oninput="syncCalculations()">
             </div>
         </div>
 
@@ -325,3 +315,42 @@
                 <div class="stat-value" id="val-net-investment">￥0</div>
             </div>
         </div>
+    </div>
+</div>
+
+<script>
+    function syncCalculations() {
+        const unitPrice = 200000;
+        const investment = 1800000;
+
+        // 入力ボックスから数値を取得
+        const workers = parseFloat(document.getElementById('num-workers').value) || 0;
+        const times = parseFloat(document.getElementById('num-times').value) || 0;
+
+        // 目安人数の計算
+        document.getElementById('pill-3').innerText = (times / 3).toFixed(1).replace('.0', '') + '名';
+        document.getElementById('pill-2').innerText = (times / 2).toFixed(1).replace('.0', '') + '名';
+        document.getElementById('pill-1').innerText = (times / 1).toFixed(1).replace('.0', '') + '名';
+
+        // 各種ロジック計算
+        const cost = unitPrice * times;
+        const subsidy = cost * 0.75;
+        const sharoushi = subsidy * 0.10;
+        const netSubsidy = subsidy - sharoushi;
+        const burden = cost - netSubsidy;
+        const netInvestment = investment - burden;
+
+        // 右側の結果に反映
+        document.getElementById('val-cost').innerText = '￥' + cost.toLocaleString();
+        document.getElementById('val-subsidy').innerText = '￥' + subsidy.toLocaleString();
+        document.getElementById('val-sharoushi').innerText = '￥' + sharoushi.toLocaleString();
+        document.getElementById('val-net-subsidy').innerText = '￥' + netSubsidy.toLocaleString();
+        document.getElementById('val-burden').innerText = '￥' + burden.toLocaleString();
+        document.getElementById('val-net-investment').innerText = '￥' + netInvestment.toLocaleString();
+    }
+
+    // 画面の読み込み完了時に初期計算を行う
+    window.onload = syncCalculations;
+</script>
+</body>
+</html>
